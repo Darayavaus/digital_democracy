@@ -1,0 +1,15 @@
+cat > .gitignore << 'EOF'
+# Byte-compiled / cache
+__pycache__/
+*.py[cod]
+
+# Virtual environment
+venv/
+
+# SQLite database
+*.db
+
+# IDE / editor configs
+.vscode/
+.idea/
+EOF
