@@ -1,5 +1,5 @@
 from db import get_session
-from models.models.politician import Politician
+from models.politician import Politician
 
 
 def seed():
