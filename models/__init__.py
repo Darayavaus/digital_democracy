@@ -1,7 +1,10 @@
-from .participant import Participant
-from .process import Process
-from .proposal import Proposal
-from .vote import Vote
+from .attachment import Attachment
+from .initiative import Initiative
+from .initiative_thematic import InitiativeThematic
+from .institution import Institution 
+from .milestone import Milestone
+from .polis import Polis  
 from .politician import Politician
+from .thematic import Thematic
 
 

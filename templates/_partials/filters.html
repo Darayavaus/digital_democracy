@@ -1,0 +1,35 @@
+<form class="filters" method="get" action="/">
+  <div class="row">
+    <label>
+      Search
+      <input type="text" name="q" value="{{ q }}" placeholder="Search initiatives..." />
+    </label>
+
+    <label>
+      Owner
+      <select name="owner_id">
+        <option value="">All owners</option>
+        {% for o in owners %}
+          <option value="{{ o.id }}" {% if owner_id and o.id == owner_id %}selected{% endif %}>{{ o.name }}</option>
+        {% endfor %}
+      </select>
+    </label>
+
+    <label>
+      From
+      <input type="date" name="date_from" value="{{ date_from[:10] if date_from else '' }}" />
+    </label>
+
+    <label>
+      To
+      <input type="date" name="date_to" value="{{ date_to[:10] if date_to else '' }}" />
+    </label>
+
+    <input type="hidden" name="limit" value="{{ limit }}" />
+  </div>
+
+  <div class="row">
+    <button type="submit">Filter</button>
+    <a class="button secondary" href="/">Reset</a>
+  </div>
+</form>

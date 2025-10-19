@@ -1,15 +1,35 @@
-{% extends "layout.html" %}
+{% extends "base.html" %}
+{% block title %}Initiatives · Lux Democracy Tracker{% endblock %}
 
-{% block title %}
-  Home - LuxDemocracy
-{% endblock %}
+{% block content %}
+  <h1>Initiatives</h1>
 
-{% block main %}
-  <div class="text-center">
-    <h1>Welcome to LuxDemocracy</h1>
-    <p class="lead">Tracking promises. Enabling participation.</p>
-    <p>Transparency in politics and collective citizen voice for Luxembourg.</p>
-    <a href="/tracker" class="btn btn-primary">View Tracker</a>
-    <a href="/participate" class="btn btn-success">Join Participation</a>
-  </div>
+  {% include "_partials/filters.html" %}
+
+  {% if initiatives|length == 0 %}
+    <p>No initiatives found. Try adjusting the filters.</p>
+  {% else %}
+    <div class="grid">
+      {% for i in initiatives %}
+        <article class="card">
+          <header class="card-header">
+            <h2><a href="/initiative/{{ i.id }}">{{ i.title }}</a></h2>
+          </header>
+          <div class="card-body">
+            {% if i.summary %}<p>{{ i.summary }}</p>{% endif %}
+            <dl class="meta">
+              {% if i.start_date %}<div><dt>Start</dt><dd>{{ i.start_date|fmt_date }}</dd></div>{% endif %}
+              {% if i.end_date %}<div><dt>End</dt><dd>{{ i.end_date|fmt_date }}</dd></div>{% endif %}
+              {% if i.budget %}<div><dt>Budget</dt><dd>{{ "{:,.0f}".format(i.budget) }}</dd></div>{% endif %}
+            </dl>
+          </div>
+          <footer class="card-footer">
+            <a class="button small" href="/initiative/{{ i.id }}">View details</a>
+          </footer>
+        </article>
+      {% endfor %}
+    </div>
+
+    {% include "_partials/pagination.html" %}
+  {% endif %}
 {% endblock %}
