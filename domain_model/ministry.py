@@ -25,5 +25,3 @@ class Ministry(Enum, str):
     M3S="Ministère de la Santé et de la Sécurité sociale"
     MSP="Ministère des Sports"
     MT="Ministère du Travail"
-
-

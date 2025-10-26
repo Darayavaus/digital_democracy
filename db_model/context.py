@@ -16,7 +16,7 @@ class Context(SQLModel, table=True):
 
     commitment_id: int = Field(foreign_key="commitment.id")
     commitment: 'Commitment' = Relationship(back_populates="context")
-    relevant_studies: list['Resources'] = Relationship(back_populates="context")
+    resources: list['Resources'] = Relationship(back_populates="context")
 
 
 

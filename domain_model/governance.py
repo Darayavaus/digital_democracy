@@ -9,11 +9,3 @@ class Governance(Enum):
     LEGISLATIVE = 'Legislative'
     COUNCIL_OF_STATE = 'Council of State'
     ADMINISTRATION = 'Administration'
-
-
-
-GOVERNANCE= ['Municipal', 'Ministerial','Legislative', 'Council of State', 'Administration']
-
-
-
-
