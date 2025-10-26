@@ -1,0 +1,74 @@
+{% extends "base.html" %}
+{% block title %}{{ initiative.title }} · Lux Democracy Tracker{% endblock %}
+
+{% block content %}
+  <nav class="breadcrumb" style="margin:0.5rem 0 1rem;">
+    <a href="/">← Back to initiatives</a>
+  </nav>
+
+  <header class="detail-header" style="margin-bottom:0.5rem;">
+    <h1 style="margin:0 0 .25rem 0;">{{ initiative.title }}</h1>
+    {% if owner %}
+      <p class="muted" style="color:#666;margin:0;">Owner: <strong>{{ owner.name }}</strong></p>
+    {% endif %}
+  </header>
+
+  {% if initiative.summary %}
+    <p class="lead" style="font-size:1.05rem;margin-top:.5rem;">{{ initiative.summary }}</p>
+  {% endif %}
+
+  <section class="panel" style="background:#fff;border:1px solid #e5e5e5;border-radius:12px;padding:1rem;margin:1rem 0;">
+    <h2 style="margin:.25rem 0 .5rem 0;">Overview</h2>
+    <dl class="meta two-col" style="display:grid;grid-template-columns:1fr 1fr;gap:.25rem 1rem;font-size:.95rem;">
+      <div><dt style="font-weight:600;">Start</dt><dd style="margin:0;color:#666;">{{ initiative.start_date|fmt_date }}</dd></div>
+      <div><dt style="font-weight:600;">End</dt><dd style="margin:0;color:#666;">{{ initiative.end_date|fmt_date }}</dd></div>
+      {% if initiative.budget %}
+        <div><dt style="font-weight:600;">Budget</dt><dd style="margin:0;color:#666;">{{ "{:,.0f}".format(initiative.budget) }}</dd></div>
+      {% endif %}
+    </dl>
+    {% if initiative.body %}
+      <div class="prose" style="white-space:pre-wrap;margin-top:.5rem;">{{ initiative.body }}</div>
+    {% endif %}
+  </section>
+
+  <section class="panel" style="background:#fff;border:1px solid #e5e5e5;border-radius:12px;padding:1rem;margin:1rem 0;">
+    <h2 style="margin:.25rem 0 .75rem 0;">Milestones</h2>
+    {% if milestones|length == 0 %}
+      <p class="muted" style="color:#666;">No milestones yet.</p>
+    {% else %}
+      <ol class="timeline" style="list-style:none;padding:0;margin:0;">
+        {% for m in milestones %}
+          <li style="display:grid;grid-template-columns:120px 1fr;gap:1rem;margin-bottom:.75rem;align-items:start;">
+            <div class="timeline-date" style="color:#666;font-size:.95rem;">
+              {{ m.due_date|fmt_date }}
+            </div>
+            <div class="timeline-card" style="background:#fff;border:1px solid #e5e5e5;border-radius:10px;padding:.75rem;">
+              <h3 style="margin:.1rem 0 .25rem 0;">{{ m.title }}</h3>
+              {% if m.summary %}<p style="margin:.25rem 0 .5rem 0;">{{ m.summary }}</p>{% endif %}
+              <dl class="meta" style="display:grid;grid-template-columns:1fr 1fr;gap:.25rem 1rem;font-size:.95rem;">
+                {% if m.budget %}<div><dt style="font-weight:600;">Budget</dt><dd style="margin:0;color:#666;">{{ "{:,.0f}".format(m.budget) }}</dd></div>{% endif %}
+                {% if m.notes %}<div><dt style="font-weight:600;">Notes</dt><dd style="margin:0;color:#666;">{{ m.notes }}</dd></div>{% endif %}
+              </dl>
+              {% if m.body %}<div class="prose small" style="white-space:pre-wrap;font-size:.95rem;margin-top:.5rem;">{{ m.body }}</div>{% endif %}
+            </div>
+          </li>
+        {% endfor %}
+      </ol>
+    {% endif %}
+  </section>
+
+  <section class="panel" style="background:#fff;border:1px solid #e5e5e5;border-radius:12px;padding:1rem;margin:1rem 0;">
+    <h2 style="margin:.25rem 0 .5rem 0;">Attachments</h2>
+    {% if attachments|length == 0 %}
+      <p class="muted" style="color:#666;">No attachments.</p>
+    {% else %}
+      <ul class="list" style="list-style:none;padding-left:1rem;margin:0;">
+        {% for a in attachments %}
+          <li style="margin:.25rem 0;">
+            <a href="{{ a.file_url }}" target="_blank" rel="noopener">{{ a.title }}</a>
+          </li>
+        {% endfor %}
+      </ul>
+    {% endif %}
+  </section>
+{% endblock %}

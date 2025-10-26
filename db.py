@@ -1,10 +1,18 @@
-from sqlmodel import create_engine, Session
+from sqlmodel import SQLModel, create_engine, Session
 
-DATABASE_URL = "sqlite:///luxdemocracy.db"
-
-# echo=True prints the generated SQL (helpful while learning/debugging)
-engine = create_engine(DATABASE_URL, echo=True)
+engine = create_engine("sqlite:///luxdemocracy.db", echo=False)
 
 def get_session():
-    """Helper to open a new DB session"""
-    return Session(engine)
+    with Session(engine) as session:
+        yield session
+
+def init_metadata() -> None:
+    from db_model import (
+        Agent,
+        Commitment,
+        Context,
+        KPI,
+        Milestone,
+        Resources,
+    )
+    SQLModel.metadata.create_all(engine)

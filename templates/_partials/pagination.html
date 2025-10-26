@@ -1,0 +1,22 @@
+{% set prev_offset = (offset - limit) if (offset - limit) > 0 else 0 %}
+{% set next_offset = offset + limit %}
+{% set has_prev = offset > 0 %}
+{% set has_next = (offset + limit) < total %}
+
+<div class="pagination">
+  <span>Showing {{ offset + 1 }}–{{ [offset + limit, total] | min }} of {{ total }}</span>
+
+  <div class="pager">
+    {% if has_prev %}
+      <a class="button" href="/?q={{ q }}&owner_id={{ owner_id or '' }}&date_from={{ date_from or '' }}&date_to={{ date_to or '' }}&limit={{ limit }}&offset={{ prev_offset }}">← Previous</a>
+    {% else %}
+      <span class="button disabled">← Previous</span>
+    {% endif %}
+
+    {% if has_next %}
+      <a class="button" href="/?q={{ q }}&owner_id={{ owner_id or '' }}&date_from={{ date_from or '' }}&date_to={{ date_to or '' }}&limit={{ limit }}&offset={{ next_offset }}">Next →</a>
+    {% else %}
+      <span class="button disabled">Next →</span>
+    {% endif %}
+  </div>
+</div>
