@@ -4,6 +4,7 @@ from datetime import datetime, timedelta, timezone
 from sqlmodel import Session
 from db import init_metadata, engine
 from models.attachment import Attachment
+from models.executive_level import PoliticalLevel
 from models.initiative import Initiative
 from models.institution import Institution
 from models.milestone import Milestone

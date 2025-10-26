@@ -7,14 +7,12 @@ def get_session():
         yield session
 
 def init_metadata() -> None:
-    from models import (
-        attachment,
-        initiative,
-        initiative_thematic,
-        institution,
-        milestone,
-        polis,
-        politician,
-        thematic,
+    from db_model import (
+        Agent,
+        Commitment,
+        Context,
+        KPI,
+        Milestone,
+        Resources,
     )
     SQLModel.metadata.create_all(engine)
