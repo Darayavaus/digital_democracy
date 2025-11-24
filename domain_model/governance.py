@@ -1,6 +1,6 @@
 from enum import Enum
 
-class Governance(Enum):
+class Governance(str, Enum):
     """
     Different categories of governance levels.
     """

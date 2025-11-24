@@ -3,7 +3,7 @@
 from enum import Enum
 
 
-class KpiType(Enum, str):
+class KpiType(str, Enum):
     """
     Various types of KPIs
     """

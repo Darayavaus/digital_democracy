@@ -1,7 +1,7 @@
 from enum import Enum
 
 
-class Ministry(Enum, str):
+class Ministry(str, Enum):
     """
     Different ministries of the government in Luxembourg.
     """

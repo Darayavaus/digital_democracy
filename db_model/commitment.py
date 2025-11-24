@@ -1,6 +1,6 @@
 from __future__ import annotations
 from datetime import date
-from typing import TYPE_CHECKING
+from typing import TYPE_CHECKING, Optional
 from sqlmodel import SQLModel, Field, Relationship
 
 from domain_model.ministry import Ministry
@@ -11,9 +11,10 @@ if TYPE_CHECKING:
     from db_model.milestone import Milestone
 
 class Commitment(SQLModel, table=True):
-    __tablename__ = "commitment"
-
-    id: int | None = Field(default=None, primary_key=True)
+    """
+    TODO: Add description
+    """
+    id: Optional[int] = Field(default=None, primary_key=True)
     title: str
     ministry: Ministry
     summary: str | None = None
