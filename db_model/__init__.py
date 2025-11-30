@@ -4,6 +4,7 @@ from db_model.commitment import Commitment
 from db_model.context import Context
 from db_model.resources import Resources
 from db_model.agent import Agent
+from db_model.draft_law import DraftLaw
 
 
 __all__ = [
@@ -13,8 +14,8 @@ __all__ = [
     "Context",
     "Resources",
     "Agent",
+    "DraftLaw",
 ]
-
 
 
 
