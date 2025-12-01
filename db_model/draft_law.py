@@ -7,6 +7,8 @@ from typing import TYPE_CHECKING, Any, Dict, Optional
 from pydantic import field_validator
 from sqlmodel import SQLModel, Field, Relationship
 
+from db_model.law_commitment_link import DraftLawCommitmentLink
+
 if TYPE_CHECKING:
     from db_model.commitment import Commitment
 
@@ -20,18 +22,34 @@ class LawType(str, Enum):
     PropositionDeLoi = "PropositionDeLoi"
 
 
+
 class LawStatus(str, Enum):
-    AviseParConferencePreside = "AviseParConferencePreside"
-    Cree = "Cree"
-    EnAttenteDispenseSecond = "EnAttenteDispenseSecond"
-    EnCommission = "EnCommission"
-    EvacueConjointement = "EvacueConjointement"
+    AviseParConferencePreside = "Avise Par Conference Presidé"
+    Created = "Created"
+    EnAttenteDispenseSecond = "En Attente Dispense Second"
+    EnCommission = "En Commission"
+    EvacueConjointement = "Evacue Conjointement"
     Fusionne = "Fusionne"
     Publie = "Publie"
-    Retire = "Retire"
-    Vide = "Vide"
-    VoteAccepte = "VoteAccepte"
-    VoteRefuse = "VoteRefuse"
+    Retire = "Retired"
+    Vide = "Empty"
+    VoteAccepte = "Vote Accepted"
+    VoteRefuse = "Vote Refused"
+
+
+INPUT_LAW_STATUS_MAPPING = {
+    "Cree": LawStatus.Created,
+    "En Attente Dispense Second": LawStatus.EnAttenteDispenseSecond,
+    "En Commission": LawStatus.EnCommission,
+    "Evacue Conjointement": LawStatus.EvacueConjointement,
+    "Fusionne": LawStatus.Fusionne,
+    "Publie": LawStatus.Publie,
+    "Retired": LawStatus.Retire,
+    "Empty": LawStatus.Vide,
+    'Rafu': LawStatus.Retired,
+    'Refu': LawStatus.VoteRefuse,
+    'Acce': LawStatus.VoteAccepte,
+}
 
 
 # ---------------------------------------------------------------------
@@ -43,21 +61,20 @@ class DraftLaw(SQLModel, table=True):
 
     id: Optional[int] = Field(default=None, primary_key=True)
 
-    law_number: Optional[int] = Field(default=None, ge=0, le=999999)
-    law_type: Optional[LawType] = None
+    law_number: int
+    law_type: LawType
 
-    law_deposit_date: Optional[date] = None
-    law_evacuation_date: Optional[date] = None
+    law_deposit_date: Optional[date]
+    law_evacuation_date: Optional[date]
 
-    law_status: Optional[LawStatus] = LawStatus.Cree
+    law_status: LawStatus
 
-    law_title: str = ""
-    law_content: str = ""
-    law_authors: Optional[str] = None
+    law_title: str
+    law_content: str
+    law_authors: Optional[str]
 
     # Relationship (adjust back_populates according to your Commitment model)
-    commitment_id: Optional[int] = Field(default=None, foreign_key="commitment.id")
-    commitment: Optional["Commitment"] = Relationship(back_populates="draft_laws")
+    commitments: list["Commitment"] = Relationship(back_populates="draft_laws", link_model=DraftLawCommitmentLink)
 
     # -----------------------------------------------------------------
     # Validators
@@ -85,10 +102,10 @@ class DraftLaw(SQLModel, table=True):
         if not v:
             return None
         text = str(v).strip().lower()
-        if "projet" in text:
-            return LawType.ProjetDeLoi
-        if "proposition" in text:
-            return LawType.PropositionDeLoi
+        # if "projet" in text:
+        #     return LawType.ProjetDeLoi
+        # if "proposition" in text:
+        #     return LawType.PropositionDeLoi
         return LawType(v)
 
     @field_validator("law_status", mode="before")
@@ -101,7 +118,7 @@ class DraftLaw(SQLModel, table=True):
             return LawStatus.AviseParConferencePreside
         if "cree" in text:
             return LawStatus.Cree
-        if "attente" in text or "dispense" in text:
+        if "attente" in text or "dispens" in text:
             return LawStatus.EnAttenteDispenseSecond
         if "commission" in text:
             return LawStatus.EnCommission

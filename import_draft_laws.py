@@ -12,13 +12,7 @@ from sqlmodel import Session
 from db import engine, init_metadata
 from db_model.draft_law import DraftLaw
 
-try:
-    from openpyxl import load_workbook
-except ImportError as exc:  # pragma: no cover
-    raise SystemExit(
-        "The openpyxl package is required to read Excel files. "
-        "Install it with `pip install openpyxl`."
-    ) from exc
+from openpyxl import load_workbook
 
 
 RowData = Tuple[int, Dict[str, Any]]
