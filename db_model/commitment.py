@@ -3,7 +3,7 @@ from datetime import date
 from typing import TYPE_CHECKING, Optional
 from sqlmodel import SQLModel, Field, Relationship
 
-from db_model.draft_law import DraftLaw
+from Users.dariusstein.Projects.digital_democracy.db_model.draft_law import DraftLaw
 from db_model.law_commitment_link import DraftLawCommitmentLink
 from domain_model.ministry import Ministry
 

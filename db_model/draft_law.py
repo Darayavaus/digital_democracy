@@ -18,39 +18,49 @@ if TYPE_CHECKING:
 # ---------------------------------------------------------------------
 
 class LawType(str, Enum):
-    ProjetDeLoi = "ProjetDeLoi"
-    PropositionDeLoi = "PropositionDeLoi"
+    ProjetDeLoi = "Projet de loi"
+    PropositionDeLoi = "Proposition de loi"
 
 
 
 class LawStatus(str, Enum):
-    AviseParConferencePreside = "Avise Par Conference Presidé"
-    Created = "Created"
-    EnAttenteDispenseSecond = "En Attente Dispense Second"
+    Vide = "Vide"
+    Cree = "Créé" 
+    Retire = "Retiré"
     EnCommission = "En Commission"
-    EvacueConjointement = "Evacue Conjointement"
-    Fusionne = "Fusionne"
-    Publie = "Publie"
-    Retire = "Retired"
-    Vide = "Empty"
-    VoteAccepte = "Vote Accepted"
-    VoteRefuse = "Vote Refused"
+    # Les travaux en commission se terminent par l’adoption d’un rapport. 
+    # Ce dernier contient le texte final du projet ou de la proposition tel 
+    # qu’il est présenté et discuté en séance publique.
+    EvacueConjointement = "Evacuation conjointe"
+    Fusionne = "Fusionné"
+    AviseParConferencePreside = "Avisé par Conférence des Présidents"
+    # Sur décision de la Conférence des Présidents, 
+    # le projet ou la proposition de loi est mis(e) à l’ordre du jour d’une séance publique.
+    EnAttenteDispenseSecond = "En attente d'être dispensé du second vote" 
+    # En principe, un second vote doit avoir lieu au moins trois mois après le premier, 
+    # mais la Chambre demande généralement au Conseil d’État à être dispensée de ce second vote
+    VoteAccepte = "Accepté"
+    VoteRefuse = "Refusé"
+    Publie = "Publié"
+    # Quatre jours après sa publication au Journal officiel du Grand-Duché de Luxembourg, 
+    # la loi entre en vigueur et devient obligatoire 
 
+# ---------------------------------------------------------------------
+# Matching imported strings to desired Enum values (e.g. "Cree" → LawStatus.Cree = "Créé")
+# ---------------------------------------------------------------------
 
 INPUT_LAW_STATUS_MAPPING = {
-    "Cree": LawStatus.Created,
-    "En Attente Dispense Second": LawStatus.EnAttenteDispenseSecond,
-    "En Commission": LawStatus.EnCommission,
-    "Evacue Conjointement": LawStatus.EvacueConjointement,
+    "Cree": LawStatus.Cree,
+    "EnAttenteDispenseSecond": LawStatus.EnAttenteDispenseSecond,
+    "EnCommission": LawStatus.EnCommission,
+    "EvacueConjointement": LawStatus.EvacueConjointement,
     "Fusionne": LawStatus.Fusionne,
     "Publie": LawStatus.Publie,
-    "Retired": LawStatus.Retire,
-    "Empty": LawStatus.Vide,
-    'Rafu': LawStatus.Retired,
-    'Refu': LawStatus.VoteRefuse,
-    'Acce': LawStatus.VoteAccepte,
+    "Retire": LawStatus.Retire,
+    "Vide": LawStatus.Vide,
+    "VoteAccepte": LawStatus.VoteAccepte,
+    "VoteRefuse": LawStatus.VoteRefuse,
 }
-
 
 # ---------------------------------------------------------------------
 # Model
@@ -76,92 +86,3 @@ class DraftLaw(SQLModel, table=True):
     # Relationship (adjust back_populates according to your Commitment model)
     commitments: list["Commitment"] = Relationship(back_populates="draft_laws", link_model=DraftLawCommitmentLink)
 
-    # -----------------------------------------------------------------
-    # Validators
-    # -----------------------------------------------------------------
-
-    @staticmethod
-    def _parse_ddmmyyyy(value: Any, field_name: str) -> Optional[date]:
-        if value in (None, ""):
-            return None
-        if isinstance(value, date):
-            return value
-        if isinstance(value, str):
-            try:
-                return datetime.strptime(value.strip(), "%d/%m/%Y").date()
-            except ValueError:
-                raise ValueError(f"{field_name} must be in dd/mm/yyyy format")
-        raise ValueError(f"Invalid type for {field_name}: {value!r}")
-
-    @field_validator("law_deposit_date", "law_evacuation_date", mode="before")
-    def _validate_dates(cls, v, info):
-        return cls._parse_ddmmyyyy(v, info.field_name)
-
-    @field_validator("law_type", mode="before")
-    def _validate_type(cls, v):
-        if not v:
-            return None
-        text = str(v).strip().lower()
-        # if "projet" in text:
-        #     return LawType.ProjetDeLoi
-        # if "proposition" in text:
-        #     return LawType.PropositionDeLoi
-        return LawType(v)
-
-    @field_validator("law_status", mode="before")
-    def _validate_status(cls, v):
-        if not v:
-            return None
-        text = str(v).strip().lower()
-
-        if "avise" in text or "conference" in text:
-            return LawStatus.AviseParConferencePreside
-        if "cree" in text:
-            return LawStatus.Cree
-        if "attente" in text or "dispens" in text:
-            return LawStatus.EnAttenteDispenseSecond
-        if "commission" in text:
-            return LawStatus.EnCommission
-        if "evac" in text or "conjoint" in text:
-            return LawStatus.EvacueConjointement
-        if "fusion" in text:
-            return LawStatus.Fusionne
-        if "publie" in text or "publi" in text:
-            return LawStatus.Publie
-        if "retir" in text:
-            return LawStatus.Retire
-        if "vide" == text or "vide" in text:
-            return LawStatus.Vide
-        if "vote" in text and ("accepte" in text or "accept" in text):
-            return LawStatus.VoteAccepte
-        if "vote" in text and ("refus" in text or "refuse" in text):
-            return LawStatus.VoteRefuse
-
-        return LawStatus(v)
-
-    # -----------------------------------------------------------------
-    # from_row (Excel → DraftLaw)
-    # -----------------------------------------------------------------
-
-    @classmethod
-    def from_row(cls, row: Dict[str, Any]) -> "DraftLaw":
-        """Create a DraftLaw from an Excel row with predictable column names."""
-
-        # law_number: keep only digits
-        raw_num = row.get("law_number")
-        law_number = None
-        if raw_num not in (None, ""):
-            import re
-            digits = re.sub(r"\D", "", str(raw_num))
-            law_number = int(digits) if digits else None
-
-        return cls(
-            law_number=law_number,
-            law_type=row.get("law_type"),
-            law_deposit_date=row.get("law_deposit_date"),
-            law_evacuation_date=row.get("law_evacuation_date"),
-            law_status=row.get("law_status"),
-            law_title=(row.get("law_title") or "").strip(),
-            law_content=(row.get("law_content") or "").strip(),
-            law_authors=(row.get("law_authors") or None),
-        )

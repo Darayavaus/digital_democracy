@@ -1,5 +1,5 @@
 # init_db.py
-from db import init_metadata
+from db_model.db import init_metadata
 
 def init_db():
     init_metadata()
