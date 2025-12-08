@@ -7,7 +7,6 @@ from db_model.draft_law import INPUT_LAW_STATUS_MAPPING, DraftLaw, LawStatus
 
 ## Import excel file 
 
-
 def import_draft_laws(): 
     with Session(engine) as session:
         df = pd.read_excel('static/112-texte-loi.xlsx')
