@@ -1,16 +1,21 @@
 import pandas as pd
-from sqlalchemy.orm import Session
-from db_model.db import engine
+from sqlmodel import Session
+from db_model.db import engine, init_metadata
 
+# Importing necessary models
 from db_model.draft_law import INPUT_LAW_STATUS_MAPPING, DraftLaw, LawStatus
 
 
 ## Import excel file 
-
 def import_draft_laws(): 
+    
+    # Create database tables if they do not already exist in luxdemocracy.db
+    init_metadata() 
+
     with Session(engine) as session:
         df = pd.read_excel('static/112-texte-loi.xlsx')
-        for index, row in df.iterrows():
+        #create SQLModel instances for each row and add to session
+        for index, row in df.itertuples():
             draft_law = DraftLaw(
                 law_number=row['law_number'],
                 law_type=row['law_type'],
@@ -22,4 +27,7 @@ def import_draft_laws():
                 law_authors=row['law_authors']
             )
             session.add(draft_law)
-            session.commit()
+        session.commit()
+
+if __name__ == "__main__":
+    import_draft_laws()

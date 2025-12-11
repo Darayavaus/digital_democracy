@@ -2,7 +2,7 @@ from __future__ import annotations
 
 from datetime import datetime, date
 from enum import Enum
-from typing import TYPE_CHECKING, Any, Dict, Optional
+from typing import TYPE_CHECKING, Any, Dict, Optional, List 
 
 from pydantic import field_validator
 from sqlmodel import SQLModel, Field, Relationship
@@ -45,9 +45,9 @@ class LawStatus(str, Enum):
     # Quatre jours après sa publication au Journal officiel du Grand-Duché de Luxembourg, 
     # la loi entre en vigueur et devient obligatoire 
 
-# ---------------------------------------------------------------------
-# Matching imported strings to desired Enum values (e.g. "Cree" → LawStatus.Cree = "Créé")
-# ---------------------------------------------------------------------
+
+# Creating a dictionary matching imported strings 
+# to desired Enum values (e.g. "Cree" → LawStatus.Cree = "Créé")
 
 INPUT_LAW_STATUS_MAPPING = {
     "Cree": LawStatus.Cree,
@@ -63,26 +63,22 @@ INPUT_LAW_STATUS_MAPPING = {
 }
 
 # ---------------------------------------------------------------------
-# Model
+# Declare SQLModel Class DraftLaw
 # ---------------------------------------------------------------------
 
 class DraftLaw(SQLModel, table=True):
     __tablename__ = "draft_law"
 
     id: Optional[int] = Field(default=None, primary_key=True)
-
     law_number: int
     law_type: LawType
-
     law_deposit_date: Optional[date]
     law_evacuation_date: Optional[date]
-
     law_status: LawStatus
-
     law_title: str
     law_content: str
     law_authors: Optional[str]
 
     # Relationship (adjust back_populates according to your Commitment model)
-    commitments: list["Commitment"] = Relationship(back_populates="draft_laws", link_model=DraftLawCommitmentLink)
-
+    # commitments: list["Commitment"] = Relationship(back_populates="draft_laws", link_model=DraftLawCommitmentLink)
+    commitments: List["Commitment"] = Relationship(back_populates="draft_laws", link_model=DraftLawCommitmentLink)
