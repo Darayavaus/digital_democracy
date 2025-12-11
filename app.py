@@ -9,7 +9,7 @@ from fastapi.staticfiles import StaticFiles
 from fastapi.templating import Jinja2Templates
 from sqlmodel import Session
 
-from db import get_session, init_metadata
+from db_model.db import get_session, init_metadata
 
 # --------------------------------------------------------------------
 # App & Jinja setup
