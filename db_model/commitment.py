@@ -1,7 +1,5 @@
-from __future__ import annotations
 from datetime import date
-from typing import TYPE_CHECKING, Optional, List
-from sqlalchemy.orm import Mapped
+from typing import TYPE_CHECKING, Optional
 from sqlmodel import SQLModel, Field, Relationship
 
 from db_model.law_commitment_link import DraftLawCommitmentLink
@@ -27,8 +25,7 @@ class Commitment(SQLModel, table=True):
     end_date: date | None = Field(default=None)
     budget: int | None = None
 
-    milestones: list['Milestone'] = Relationship(back_populates="commitment")
-    kpis: list['KPI'] = Relationship(back_populates="commitment")
-    context: list['Context'] = Relationship(back_populates="commitment")
-    ##draft_laws: list["DraftLaw"] = Relationship(back_populates="commitments", link_model=DraftLawCommitmentLink)
-    draft_laws: List["DraftLaw"] = Relationship(back_populates="commitments", link_model=DraftLawCommitmentLink)
+    # milestones: list['Milestone'] = Relationship(back_populates="commitment")
+    # kpis: list['KPI'] = Relationship(back_populates="commitment")
+    # context: list['Context'] = Relationship(back_populates="commitment")
+    draft_laws: list["DraftLaw"] = Relationship(back_populates="commitments", link_model=DraftLawCommitmentLink)

@@ -1,10 +1,7 @@
-from __future__ import annotations
-
 from datetime import datetime, date
 from enum import Enum
-from typing import TYPE_CHECKING, Any, Dict, Optional, List 
+from typing import TYPE_CHECKING, Any, Dict, Optional
 
-from pydantic import field_validator
 from sqlmodel import SQLModel, Field, Relationship
 
 from db_model.law_commitment_link import DraftLawCommitmentLink
@@ -70,15 +67,15 @@ class DraftLaw(SQLModel, table=True):
     __tablename__ = "draft_law"
 
     id: Optional[int] = Field(default=None, primary_key=True)
-    law_number: int
+    law_number: str  # Some law numbers end with 'a' or 'b'
     law_type: LawType
     law_deposit_date: Optional[date]
     law_evacuation_date: Optional[date]
     law_status: LawStatus
     law_title: str
-    law_content: str
-    law_authors: Optional[str]
+    law_content: Optional[str] = Field(default=None) # allow empty content
+    law_authors: Optional[str] = Field(default=None) # allow empty content
 
     # Relationship (adjust back_populates according to your Commitment model)
     # commitments: list["Commitment"] = Relationship(back_populates="draft_laws", link_model=DraftLawCommitmentLink)
-    commitments: List["Commitment"] = Relationship(back_populates="draft_laws", link_model=DraftLawCommitmentLink)
+    commitments: list["Commitment"] = Relationship(back_populates="draft_laws", link_model=DraftLawCommitmentLink)
